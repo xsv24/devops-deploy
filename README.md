@@ -51,6 +51,13 @@ reportgenerator \
 -reporttypes:Html
 ```
 
+# Assumptions
+
+- All json fields are required except from `Release.Version`.
+
 # Improvements
 
+- Could add a git hook to automatically run `dotnet format`.
+- Use of pipeline `lint -> test -> static code analysis -> code coverage -> vunerabililty scan`
 - Better code coverage tool such as Sonarcloud.
+- Set up dependabot to help keep dependencies upto date.
