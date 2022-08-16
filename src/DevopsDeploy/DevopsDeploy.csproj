@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- I actually wrote this package currently working on System.Text.Json implementation -->
+    <PackageReference Include="JsonPact.Newtonsoft" Version="0.0.4" />
+  </ItemGroup>
+
 </Project>
