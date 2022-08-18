@@ -6,7 +6,7 @@ namespace DevopsDeploy.Models;
 /// </summary>
 /// <param name="Id">Identifier of the environment.</param>
 /// <param name="Name">Display name of the environment.</param>
-public record Environment(
+public record Env(
     string Id,
     string Name
 );

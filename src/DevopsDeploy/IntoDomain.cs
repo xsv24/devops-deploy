@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using DevopsDeploy.Models;
-using Environment = DevopsDeploy.Models.Environment;
 
 namespace DevopsDeploy;
 
@@ -16,7 +15,7 @@ public static class DomainMapper
                 deployment.Release.Project.Id,
                 deployment.Environment.Id
             ))
-            .ToImmutableSortedDictionary(
+            .ToImmutableSortedDictionary( // Only sorting for clarity here when debugging would remove for production.
                 deployment => deployment.Key,
                 deployment => deployment.OrderByDescending(d => d.DeployedAt).ToImmutableList()
             );
@@ -26,7 +25,7 @@ public static class DomainMapper
 
     public static DeploymentDomain? IntoDomainOrDefault(
         this Deployment deployment,
-        IReadOnlyDictionary<string, Environment> environments,
+        IReadOnlyDictionary<string, Env> environments,
         IReadOnlyDictionary<string, Release> releases,
         IReadOnlyDictionary<string, Project> projects
     )
@@ -44,13 +43,13 @@ public static class DomainMapper
 
     public static DeploymentDomain IntoDomain(
         this Deployment deployment,
-        IReadOnlyDictionary<string, Environment> environments,
+        IReadOnlyDictionary<string, Env> environments,
         IReadOnlyDictionary<string, Release> releases,
         IReadOnlyDictionary<string, Project> projects
     )
     {
         var environment = environments.GetOrDefault(deployment.EnvironmentId)
-                          ?? throw new NotFoundException(deployment.EnvironmentId, nameof(Environment));
+                          ?? throw new NotFoundException(deployment.EnvironmentId, nameof(Env));
 
         var release = releases.GetOrDefault(deployment.ReleaseId)
                       ?? throw new NotFoundException(deployment.ReleaseId, nameof(Release));

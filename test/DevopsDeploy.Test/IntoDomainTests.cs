@@ -1,7 +1,6 @@
 using AutoFixture.Xunit2;
 using DevopsDeploy.Models;
 using FluentAssertions;
-using Environment = DevopsDeploy.Models.Environment;
 
 namespace DevopsDeploy.Test;
 
@@ -17,10 +16,10 @@ public class IntoDomainTests
     [Theory, AutoData]
     public void Deployment_IntoDomainOrDefault_With_Required_Matches(
         Deployment deployment,
-        Environment environment,
+        Env environment,
         Release release,
         Project project,
-        Dictionary<string, Environment> environments,
+        Dictionary<string, Env> environments,
         Dictionary<string, Release> releases,
         Dictionary<string, Project> projects
     )
@@ -51,7 +50,7 @@ public class IntoDomainTests
     )
     {
         var deploy = deployment.IntoDomainOrDefault(
-            new Dictionary<string, Environment>(),
+            new Dictionary<string, Env>(),
             releases,
             projects
         );
@@ -62,8 +61,8 @@ public class IntoDomainTests
     [Theory, AutoData]
     public void Deployment_IntoDomainOrDefault_With_No_Matching_Releases_Returns_Null(
         Deployment deployment,
-        Environment environment,
-        Dictionary<string, Environment> environments,
+        Env environment,
+        Dictionary<string, Env> environments,
         Dictionary<string, Project> projects
     )
     {
@@ -81,9 +80,9 @@ public class IntoDomainTests
     [Theory, AutoData]
     public void Deployment_IntoDomainOrDefault_With_No_Matching_Project_Returns_Null(
         Deployment deployment,
-        Environment environment,
+        Env environment,
         Release release,
-        Dictionary<string, Environment> environments,
+        Dictionary<string, Env> environments,
         Dictionary<string, Release> releases
     )
     {
@@ -107,20 +106,20 @@ public class IntoDomainTests
     )
     {
         var act = () => deployment.IntoDomain(
-            new Dictionary<string, Environment>(),
+            new Dictionary<string, Env>(),
             releases,
             projects
         );
 
         act.Should().ThrowExactly<NotFoundException>()
-            .WithMessage($"No match found for {nameof(Environment)} with identifier {deployment.EnvironmentId}");
+            .WithMessage($"No match found for {nameof(Env)} with identifier {deployment.EnvironmentId}");
     }
 
     [Theory, AutoData]
     public void Deployment_IntoDomain_With_No_Matching_Releases_Throws(
         Deployment deployment,
-        Environment environment,
-        Dictionary<string, Environment> environments,
+        Env environment,
+        Dictionary<string, Env> environments,
         Dictionary<string, Project> projects
     )
     {
@@ -139,9 +138,9 @@ public class IntoDomainTests
     [Theory, AutoData]
     public void Deployment_IntoDomain_With_No_Matching_Project_Throws(
         Deployment deployment,
-        Environment environment,
+        Env environment,
         Release release,
-        Dictionary<string, Environment> environments,
+        Dictionary<string, Env> environments,
         Dictionary<string, Release> releases
     )
     {

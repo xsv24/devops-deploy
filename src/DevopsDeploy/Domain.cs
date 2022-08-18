@@ -1,13 +1,12 @@
 using System.Collections.Immutable;
 using DevopsDeploy.Models;
-using Environment = DevopsDeploy.Models.Environment;
 
 namespace DevopsDeploy;
 
 public record DeploymentDomain(
     string Id,
     ReleaseDomain Release,
-    Environment Environment,
+    Env Environment,
     DateTime DeployedAt
 );
 
