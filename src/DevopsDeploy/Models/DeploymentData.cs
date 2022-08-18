@@ -1,9 +1,8 @@
-using DevopsDeploy.Models;
 using JsonPact;
 using JsonPact.NewtonSoft;
 using Serilog;
 
-namespace DevopsDeploy;
+namespace DevopsDeploy.Models;
 
 public record DeploymentData(
     HashSet<Deployment> Deployments,

@@ -1,4 +1,4 @@
-namespace DevopsDeploy.Models;
+namespace DevopsDeploy.Domain;
 
 /// <summary>
 /// Composite key use to group projects and environments.

@@ -1,4 +1,5 @@
-﻿using DevopsDeploy;
+﻿using DevopsDeploy.Domain;
+using DevopsDeploy.Models;
 using Serilog;
 
 // Simple logger

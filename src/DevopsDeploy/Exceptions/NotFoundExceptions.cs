@@ -1,5 +1,3 @@
-using Serilog;
-
 namespace DevopsDeploy;
 
 public class NotFoundException : KeyNotFoundException

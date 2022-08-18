@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using DevopsDeploy.Models;
 
-namespace DevopsDeploy;
+namespace DevopsDeploy.Domain;
 
 public static class DomainMapper
 {
