@@ -5,7 +5,7 @@ namespace DevopsDeploy;
 
 public static class DomainMapper
 {
-    public static DeploymentCollection IntoDeploymentCollection(this DeploymentData data)
+    public static DeploymentCollection IntoDeploymentCollection(this DeploymentData data, int maxDeployments = 2)
     {
         var collection = data.Deployments
             .Select(deployment => deployment.IntoDomainOrDefault(data.Environments, data.Releases, data.Projects))
@@ -17,13 +17,16 @@ public static class DomainMapper
             ))
             .ToImmutableSortedDictionary( // Only sorting for clarity here when debugging would remove for production.
                 deployment => deployment.Key,
-                deployment => deployment.OrderByDescending(d => d.DeployedAt).ToImmutableList()
+                deployment => deployment
+                    .OrderByDescending(d => d.DeployedAt)
+                    .Take(maxDeployments)
+                    .ToImmutableList()
             );
 
         return new DeploymentCollection(collection);
     }
 
-    public static DeploymentDomain? IntoDomainOrDefault(
+    internal static DeploymentDomain? IntoDomainOrDefault(
         this Deployment deployment,
         IReadOnlyDictionary<string, Env> environments,
         IReadOnlyDictionary<string, Release> releases,
@@ -41,7 +44,7 @@ public static class DomainMapper
         }
     }
 
-    public static DeploymentDomain IntoDomain(
+    internal static DeploymentDomain IntoDomain(
         this Deployment deployment,
         IReadOnlyDictionary<string, Env> environments,
         IReadOnlyDictionary<string, Release> releases,
