@@ -6,7 +6,6 @@ namespace DevopsDeploy;
 
 public static class DomainMapper
 {
-
     public static DeploymentCollection IntoDeploymentCollection(this DeploymentData data)
     {
         var collection = data.Deployments
@@ -63,7 +62,7 @@ public static class DomainMapper
         );
     }
 
-    public static ReleaseDomain IntoDomain(
+    private static ReleaseDomain IntoDomain(
         this Release release,
         Project project
     ) => new(
