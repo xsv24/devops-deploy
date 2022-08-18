@@ -46,14 +46,17 @@ Copy guid generated within `./test/DevopsDeploy/TestResults` and run the followi
 
 ```bash
 reportgenerator \
--reports:"./test/DevopsDeploy.Test/TestResults/{guid}/coverage.cobertura.xml" \
--targetdir:"coveragereport" \
+-reports:"./test/DevopsDeploy.Test/TestResults/*/coverage.cobertura.xml" \
+-targetdir:"coverage" \
 -reporttypes:Html
 ```
 
 # Assumptions
 
 - All json fields are required except from `Release.Version`.
+- If timestamps are same the `Version` number is at least incremental and the higher version will be used.
+- Any unsupported environments or projects found, are skipped and logged.
+- Assuming timestamps of release and deployment at are all of the same offset i.e UTC
 
 # Improvements
 
@@ -61,3 +64,4 @@ reportgenerator \
 - Use of pipeline `lint -> test -> static code analysis -> code coverage -> vunerabililty scan`
 - Better code coverage tool such as Sonarcloud.
 - Set up dependabot to help keep dependencies upto date.
+- Possibly suggest data/json structure be switched from arrays -> map / dictionary as it would make look ups faster.
