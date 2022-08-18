@@ -28,7 +28,10 @@ public class DeploymentCollection : SortedDictionary<ProjectEnvKey, ImmutableLis
         // Filter out invalid values, group by project & environment, sort grouped deployments by date.
         foreach (var (key, value) in this)
         {
-            var deploy = value.First();
+            var deploy = value.FirstOrDefault();
+
+            if (deploy is null) continue;
+
             Serilog.Log.Information(
                 "ReleaseId: '{ReleaseId}' ProjectId: '{ProjectId}' EnvironmentId: '{EnvironmentId}', Deployment: '{Deployment}' @ '{DeployedAt}'",
                 key.ReleaseId,

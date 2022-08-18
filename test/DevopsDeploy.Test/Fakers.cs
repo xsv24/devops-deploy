@@ -56,4 +56,6 @@ public static class Fake
         ReleaseId = FakeStr(),
         EnvironmentId = FakeStr()
     };
+
+    public static int FakeInt() => Mocker.Create<int>();
 }

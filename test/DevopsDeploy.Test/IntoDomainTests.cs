@@ -6,6 +6,7 @@ namespace DevopsDeploy.Test;
 
 public class IntoDomainTests
 {
+
     [Fact]
     public void IntoDeploymentCollection_With_The_Same_Release_Env_Project_Are_Grouped_And_Sorted()
     {
@@ -28,7 +29,7 @@ public class IntoDomainTests
         );
 
         // Act
-        var results = data.IntoDeploymentCollection();
+        var results = data.IntoDeploymentCollection(maxDeployments: 10);
 
         // Assert
         results.Should().HaveCount(1);
@@ -44,8 +45,51 @@ public class IntoDomainTests
     }
 
     [Fact]
+    public void IntoDeploymentCollection_When_Max_Deployments_Hit_The_Newest_Deployments_Are_Left()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+
+        var projects = Fake.FakeProjects("app");
+        var envs = Fake.FakeEnvs("test");
+        var releases = Fake.FakeReleases(projects["app"], "new-feature");
+
+        var deployments = new List<Deployment>();
+        deployments.AddLinkedDeployment(now.AddSeconds(2), envs["test"], releases["new-feature"]);
+        deployments.AddLinkedDeployment(now, envs["test"], releases["new-feature"]);
+        deployments.AddLinkedDeployment(now.AddSeconds(1), envs["test"], releases["new-feature"]);
+
+        var data = new DeploymentData(
+            Deployments: deployments.ToHashSet(),
+            Environments: envs,
+            Releases: releases,
+            Projects: projects
+        );
+
+        // Act
+        var results = data.IntoDeploymentCollection(maxDeployments: 2);
+
+        // Assert
+        results.Should().HaveCount(1);
+
+        var result = results.First();
+
+        result.Value.Should()
+            .HaveCount(2)
+            .And
+            .BeEquivalentTo(new[]
+            {
+                deployments[0].IntoDomain(envs, releases, projects),
+                deployments[2].IntoDomain(envs, releases, projects)
+            })
+            .And
+            .BeInDescendingOrder(d => d.DeployedAt);
+    }
+
+    [Fact]
     public void IntoDeploymentCollection_With_Different_Releases_Are_Separate_Groups()
     {
+        // Arrange
         var now = DateTime.UtcNow;
 
         var envs = Fake.FakeEnvs("prod");
@@ -63,7 +107,8 @@ public class IntoDomainTests
             Releases: releases
         );
 
-        data.IntoDeploymentCollection()
+        // Act & Assert
+        data.IntoDeploymentCollection(maxDeployments: 10)
             .Should()
             .HaveCount(2);
     }
@@ -71,6 +116,7 @@ public class IntoDomainTests
     [Fact]
     public void IntoDeploymentCollection_With_Different_Environments_Are_Separate_Groups()
     {
+        // Arrange
         var now = DateTime.UtcNow;
 
         var projects = Fake.FakeProjects("app");
@@ -88,7 +134,8 @@ public class IntoDomainTests
             Projects: projects
         );
 
-        data.IntoDeploymentCollection()
+        // Act & Assert
+        data.IntoDeploymentCollection(maxDeployments: 10)
             .Should()
             .HaveCount(2);
     }
@@ -96,7 +143,7 @@ public class IntoDomainTests
     [Theory, AutoData]
     public void IntoDeploymentCollection_Does_Not_Error_On_Id_Miss_Matches(DeploymentData data)
     {
-        data.IntoDeploymentCollection()
+        data.IntoDeploymentCollection(maxDeployments: Fake.FakeInt())
             .Should().BeEmpty("As none of the id's match up");
     }
 
@@ -111,16 +158,19 @@ public class IntoDomainTests
         Dictionary<string, Project> projects
     )
     {
+        // Arrange
         environments.Add(deployment.EnvironmentId.Sanitise(), environment);
         releases.Add(deployment.ReleaseId.Sanitise(), release with { ProjectId = project.Id });
         projects.Add(project.Id.Sanitise(), project);
 
+        // Act
         var deploy = deployment.IntoDomainOrDefault(
             environments,
             releases,
             projects
         );
 
+        // Assert
         deploy.Should().Be(new DeploymentDomain(
             Id: deployment.Id,
             DeployedAt: deployment.DeployedAt,
