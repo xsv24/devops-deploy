@@ -6,6 +6,93 @@ namespace DevopsDeploy.Test;
 
 public class IntoDomainTests
 {
+    [Fact]
+    public void IntoDeploymentCollection_With_The_Same_Release_Env_Project_Are_Grouped_And_Sorted()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+
+        var projects = Fake.FakeProjects("app");
+        var envs = Fake.FakeEnvs("test");
+        var releases = Fake.FakeReleases(projects["app"], "new-feature");
+
+        var deployments = new List<Deployment>();
+        deployments.AddLinkedDeployment(now, envs["test"], releases["new-feature"]);
+        deployments.AddLinkedDeployment(now.AddHours(1), envs["test"], releases["new-feature"]);
+
+        var data = new DeploymentData(
+            Deployments: deployments.ToHashSet(),
+            Environments: envs,
+            Releases: releases,
+            Projects: projects
+        );
+
+        // Act
+        var results = data.IntoDeploymentCollection();
+
+        // Assert
+        results.Should().HaveCount(1);
+
+        var result = results.First();
+
+        result.Value.Should()
+            .HaveCount(2)
+            .And
+            .BeEquivalentTo(deployments.Select(dep => dep.IntoDomain(envs, releases, projects)))
+            .And
+            .BeInDescendingOrder(d => d.DeployedAt);
+    }
+
+    [Fact]
+    public void IntoDeploymentCollection_With_Different_Releases_Are_Separate_Groups()
+    {
+        var now = DateTime.UtcNow;
+
+        var envs = Fake.FakeEnvs("prod");
+        var projects = Fake.FakeProjects("api");
+        var releases = Fake.FakeReleases(projects["api"], "new-feature", "bug-fix");
+
+        var deployments = new List<Deployment>();
+        deployments.AddLinkedDeployment(now, envs["prod"], releases["new-feature"]);
+        deployments.AddLinkedDeployment(now.AddHours(1), envs["prod"], releases["bug-fix"]);
+
+        var data = new DeploymentData(
+            Deployments: deployments.ToHashSet(),
+            Environments: envs,
+            Projects: projects,
+            Releases: releases
+        );
+
+        data.IntoDeploymentCollection()
+            .Should()
+            .HaveCount(2);
+    }
+
+    [Fact]
+    public void IntoDeploymentCollection_With_Different_Environments_Are_Separate_Groups()
+    {
+        var now = DateTime.UtcNow;
+
+        var projects = Fake.FakeProjects("app");
+        var envs = Fake.FakeEnvs("test", "prod");
+        var releases = Fake.FakeReleases(projects["app"], "new-feature");
+
+        var deployments = new List<Deployment>();
+        deployments.AddLinkedDeployment(now, envs["test"], releases["new-feature"]);
+        deployments.AddLinkedDeployment(now.AddHours(1), envs["prod"], releases["new-feature"]);
+
+        var data = new DeploymentData(
+            Deployments: deployments.ToHashSet(),
+            Environments: envs,
+            Releases: releases,
+            Projects: projects
+        );
+
+        data.IntoDeploymentCollection()
+            .Should()
+            .HaveCount(2);
+    }
+
     [Theory, AutoData]
     public void IntoDeploymentCollection_Does_Not_Error_On_Id_Miss_Matches(DeploymentData data)
     {

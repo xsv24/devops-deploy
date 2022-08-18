@@ -1,6 +1,4 @@
 ﻿using DevopsDeploy;
-using JsonPact;
-using JsonPact.NewtonSoft;
 using Serilog;
 
 // Simple logger
