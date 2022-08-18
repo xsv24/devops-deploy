@@ -11,7 +11,11 @@ public static class DomainMapper
         var collection = data.Deployments
             .Select(deployment => deployment.IntoDomainOrDefault(data.Environments, data.Releases, data.Projects))
             .OfType<DeploymentDomain>()
-            .GroupBy(deployment => new ProjectEnvKey(deployment.Release.Project.Id, deployment.Environment.Id))
+            .GroupBy(deployment => new ProjectEnvKey(
+                deployment.Release.Id,
+                deployment.Release.Project.Id,
+                deployment.Environment.Id
+            ))
             .ToImmutableSortedDictionary(
                 deployment => deployment.Key,
                 deployment => deployment.OrderByDescending(d => d.DeployedAt).ToImmutableList()

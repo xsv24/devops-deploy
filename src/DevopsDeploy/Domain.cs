@@ -25,12 +25,14 @@ public class DeploymentCollection : SortedDictionary<ProjectEnvKey, ImmutableLis
 
     public void Log()
     {
+        Serilog.Log.Debug("Unique group count: {Count}", Count);
         // Filter out invalid values, group by project & environment, sort grouped deployments by date.
         foreach (var (key, value) in this)
         {
             var deploy = value.First();
             Serilog.Log.Information(
-                "ProjectId: '{ProjectId}' EnvironmentId: '{EnvironmentId}', Deployment: '{Deployment}' @ '{DeployedAt}'",
+                "ReleaseId: '{ReleaseId}' ProjectId: '{ProjectId}' EnvironmentId: '{EnvironmentId}', Deployment: '{Deployment}' @ '{DeployedAt}'",
+                key.ReleaseId,
                 key.ProjectId,
                 key.EnvironmentId,
                 deploy.Id,

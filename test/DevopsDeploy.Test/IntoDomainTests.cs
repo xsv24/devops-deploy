@@ -8,13 +8,6 @@ namespace DevopsDeploy.Test;
 public class IntoDomainTests
 {
     [Theory, AutoData]
-    public void IntoDeploymentCollection_Groups(DeploymentData data)
-    {
-        data.IntoDeploymentCollection()
-            .Should().BeEmpty("As none of the id's match up");
-    }
-
-    [Theory, AutoData]
     public void IntoDeploymentCollection_Does_Not_Error_On_Id_Miss_Matches(DeploymentData data)
     {
         data.IntoDeploymentCollection()
