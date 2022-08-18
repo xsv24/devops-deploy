@@ -7,6 +7,11 @@ public static class DomainMapper
 {
     public static DeploymentCollection IntoDeploymentCollection(this DeploymentData data, int maxDeployments = 2)
     {
+        if (maxDeployments <= 0)
+        {
+            throw new ArgumentException($"'{nameof(maxDeployments)}' must be greater than zero.", nameof(maxDeployments));
+        }
+
         var collection = data.Deployments
             .Select(deployment => deployment.IntoDomainOrDefault(data.Environments, data.Releases, data.Projects))
             .OfType<DeploymentDomain>()
