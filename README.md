@@ -61,6 +61,7 @@ reportgenerator \
 
 # Improvements
 
+- Use `System.Text.Json` only used `Newtonsoft` to showcase my wrapper libary [json-pact](https://github.com/xsv24/json-pact) as the `System.Text.Json` wrapper in the libary is not quite ready.
 - Could pass in max deployment `n` as an argument or make an environment variable.
 - Could pass in raw json or json file paths as an argument or make an environment variable.
 - Could add support for dotnet `app.settings.json` environment json files.
