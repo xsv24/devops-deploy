@@ -34,12 +34,12 @@ namespace DevopsDeploy.Test {
 
             var result = results.First();
 
-            result.Value.Should()
-                .HaveCount(2)
-                .And
+            result.Value.Should().HaveCount(2);
+            result.Value.Values
+                .Should()
                 .BeEquivalentTo(deployments.Select(dep => dep.IntoDomain(envs, releases, projects)))
                 .And
-                .BeInDescendingOrder(d => d.DeployedAt);
+                .BeInAscendingOrder(deployment => deployment.DeployedAt);
         }
 
         [Fact]
@@ -71,16 +71,15 @@ namespace DevopsDeploy.Test {
 
             var result = results.First();
 
-            result.Value.Should()
-                .HaveCount(2)
-                .And
+            result.Value.Should().HaveCount(2);
+            result.Value.Values.Should()
                 .BeEquivalentTo(new[]
                 {
-                deployments[0].IntoDomain(envs, releases, projects),
-                deployments[2].IntoDomain(envs, releases, projects)
+                    deployments[2].IntoDomain(envs, releases, projects),
+                    deployments[0].IntoDomain(envs, releases, projects)
                 })
                 .And
-                .BeInDescendingOrder(d => d.DeployedAt);
+                .BeInAscendingOrder(deployment => deployment.DeployedAt);
         }
 
         [Fact]
