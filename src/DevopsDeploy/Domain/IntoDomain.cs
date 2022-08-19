@@ -1,11 +1,13 @@
-﻿using DevopsDeploy.Models;
+﻿using DevopsDeploy.Exceptions;
+using DevopsDeploy.Models;
 using Serilog;
 
 namespace DevopsDeploy.Domain;
+
 public static class DomainMapper {
     public static DeploymentCollection IntoDeploymentCollection(this DeploymentData data, int maxDeployments = 2) {
         if (maxDeployments <= 0) {
-            throw new ArgumentException($"'{nameof(maxDeployments)}' must be greater than zero.", nameof(maxDeployments));
+            throw new ValidationException($"'{nameof(maxDeployments)}' must be greater than zero.");
         }
 
         Log.Information("Processing deployments...");

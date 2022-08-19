@@ -1,4 +1,5 @@
 ﻿namespace DevopsDeploy.Domain;
+
 public class DeploymentCollection : Dictionary<ProjectEnvKey, SortedList<DateTime, DeploymentDomain>> {
 
     private readonly int _maxDeployments;

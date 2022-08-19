@@ -1,8 +1,10 @@
-﻿using JsonPact.NewtonSoft;
+﻿using DevopsDeploy.Exceptions;
+using JsonPact.NewtonSoft;
 using Newtonsoft.Json;
 using Serilog;
 
 namespace DevopsDeploy;
+
 public static class Utils {
     /// <summary>
     /// Simple extension on string to remove any pre-fixed and post-fixed whitespace
@@ -25,7 +27,7 @@ public static class Utils {
 
             // We use a 'HashSet' to avoid any possible duplicate data for iteration performance.
             return serializer.Deserialize<HashSet<T>>(jsonReader) ??
-                   throw new ArgumentException($"Expected valid a list of {typeof(T).Name}'s.");
+                   throw new ValidationException($"Expected valid a list of {typeof(T).Name}'s.");
         } catch (Exception) {
             Log.Error("Failed to attempting to parse json from `{Path}` for {Type}", path, typeof(T).Name);
             throw;

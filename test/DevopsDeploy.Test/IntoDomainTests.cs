@@ -1,5 +1,6 @@
 ﻿using AutoFixture.Xunit2;
 using DevopsDeploy.Domain;
+using DevopsDeploy.Exceptions;
 using DevopsDeploy.Models;
 using FluentAssertions;
 

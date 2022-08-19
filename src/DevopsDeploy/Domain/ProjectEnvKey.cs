@@ -1,4 +1,5 @@
 ﻿namespace DevopsDeploy.Domain;
+
 /// <summary>
 /// Composite key used to group projects and environments.
 /// Tuple is used as it implements <see cref="IComparable"/> required to be used as a key.

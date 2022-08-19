@@ -1,4 +1,5 @@
-﻿namespace DevopsDeploy;
+﻿namespace DevopsDeploy.Exceptions;
+
 public class NotFoundException : KeyNotFoundException {
     public readonly string Id;
 
