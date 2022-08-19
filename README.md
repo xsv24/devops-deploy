@@ -51,6 +51,8 @@ reportgenerator \
 -reporttypes:Html
 ```
 
+![alt text](img/coverage.png)
+
 # Assumptions
 
 - All json fields are required except from `Release.Version` if required values are not found error.
