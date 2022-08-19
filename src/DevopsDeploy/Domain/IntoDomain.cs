@@ -1,5 +1,5 @@
-﻿using System.Collections.Immutable;
-using DevopsDeploy.Models;
+﻿using DevopsDeploy.Models;
+using Serilog;
 
 namespace DevopsDeploy.Domain {
     public static class DomainMapper {
@@ -8,23 +8,19 @@ namespace DevopsDeploy.Domain {
                 throw new ArgumentException($"'{nameof(maxDeployments)}' must be greater than zero.", nameof(maxDeployments));
             }
 
-            var collection = data.Deployments
-                .Select(deployment => deployment.IntoDomainOrDefault(data.Environments, data.Releases, data.Projects))
-                .OfType<DeploymentDomain>()
-                .GroupBy(deployment => new ProjectEnvKey(
-                    deployment.Release.Id,
-                    deployment.Release.Project.Id,
-                    deployment.Environment.Id
-                ))
-                .ToImmutableSortedDictionary( // Only sorting for clarity here when debugging would remove for production.
-                    deployment => deployment.Key,
-                    deployment => deployment
-                        .OrderByDescending(d => d.DeployedAt)
-                        .Take(maxDeployments)
-                        .ToImmutableList()
-                );
+            Log.Information("Processing deployments...");
 
-            return new DeploymentCollection(collection);
+            var collection = new DeploymentCollection(maxDeployments);
+
+            foreach (var deployment in data.Deployments) {
+                var domain = deployment.IntoDomainOrDefault(data.Environments, data.Releases, data.Projects);
+
+                if (domain is null) continue;
+
+                collection.Add(domain);
+            }
+
+            return collection;
         }
 
         internal static DeploymentDomain? IntoDomainOrDefault(

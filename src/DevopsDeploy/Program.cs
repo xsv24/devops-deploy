@@ -8,6 +8,8 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-(await DeploymentData.FromJsonFiles())
-    .IntoDeploymentCollection(maxDeployments: 4)
-    .Log();
+var artifacts = (await DeploymentData.FromJsonFiles())
+    .IntoDeploymentCollection(maxDeployments: 1)
+    .DeploymentIdsToPersist();
+
+Log.Information("DeploymentId's to persist: {Artifacts}", artifacts);

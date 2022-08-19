@@ -6,5 +6,11 @@ namespace DevopsDeploy.Domain {
         ReleaseDomain Release,
         Env Environment,
         DateTime DeployedAt
-    );
+    ) {
+        public ProjectEnvKey IntoKey() => new(
+            Release.Id.Sanitise(),
+            Release.Project.Id.Sanitise(),
+            Environment.Id.Sanitise()
+        );
+    }
 }
