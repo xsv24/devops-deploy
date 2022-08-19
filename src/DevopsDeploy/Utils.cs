@@ -6,8 +6,15 @@ namespace DevopsDeploy;
 
 public static class Utils
 {
+    /// <summary>
+    /// Simple extension on string to remove any pre-fixed and post-fixed whitespace
+    /// and convert the string to lower to prevent key mis-matches.
+    /// </summary>
     public static string Sanitise(this string value) => value.Trim().ToLower();
 
+    /// <summary>
+    /// Simple extension on dictionary to get a value from a <see cref="Sanitise"/>d key.
+    /// </summary>
     public static T? GetOrDefault<T>(this IReadOnlyDictionary<string, T> map, string key) => map.GetValueOrDefault(key.Sanitise());
 
     /// <summary>
