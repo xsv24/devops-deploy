@@ -12,7 +12,7 @@ public record DeploymentData(
 {
     public static async Task<DeploymentData> FromJsonFiles(string? directory = null, JsonOptions? options = null)
     {
-        var path = directory ?? $"{Environment.CurrentDirectory}/Json";
+        var path = directory ?? $"{Environment.CurrentDirectory}/data";
         var pact = options ?? JsonPacts.Default(JsonPactCase.Pascal);
 
         // Asynchronously read each json separately file since we aren't worrying about dependencies. 

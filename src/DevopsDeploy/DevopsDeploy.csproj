@@ -16,7 +16,7 @@
   
   <ItemGroup>
     <!-- Allows us to run the project from the root level as well as the project level -->
-    <Content Include="../../Json/**" LinkBase="Json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../data/**" LinkBase="data" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   
   <ItemGroup>
