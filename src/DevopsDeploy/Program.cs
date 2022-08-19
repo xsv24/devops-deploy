@@ -8,7 +8,6 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-DeploymentData
-    .FromJsonFiles()
+(await DeploymentData.FromJsonFiles())
     .IntoDeploymentCollection(maxDeployments: 4)
     .Log();

@@ -1,6 +1,5 @@
 using JsonPact;
 using JsonPact.NewtonSoft;
-using Serilog;
 
 namespace DevopsDeploy.Models;
 
@@ -11,40 +10,26 @@ public record DeploymentData(
     IReadOnlyDictionary<string, Release> Releases
 )
 {
-    public static DeploymentData FromJsonFiles(string? directory = null, JsonOptions? options = null)
+    public static async Task<DeploymentData> FromJsonFiles(string? directory = null, JsonOptions? options = null)
     {
         var path = directory ?? $"{Environment.CurrentDirectory}/Json";
+        var pact = options ?? JsonPacts.Default(JsonPactCase.Pascal);
 
-        var pact = (options ?? JsonPacts.Default(JsonPactCase.Pascal)).IntoJsonPact();
+        // Asynchronously read each json separately file since we aren't worrying about dependencies. 
+        // We use a 'HashSet' to avoid any possible duplicate data for iteration performance.
+        var deployments = pact.DeserializeHashSetAsync<Deployment>($"{path}/Deployments.json");
+        var environments = pact.DeserializeHashSetAsync<Env>($"{path}/Environments.json");
+        var projects = pact.DeserializeHashSetAsync<Project>($"{path}/Projects.json");
+        var releases = pact.DeserializeHashSetAsync<Release>($"{path}/Releases.json");
 
-        try
-        {
-            // We use a 'HashSet' to avoid any possible duplicate data for iteration performance.
-            var deployments = pact.Deserialize<HashSet<Deployment>>(File.ReadAllText($"{path}/Deployments.json"))
-                              ?? throw new ArgumentException($"Expected valid a list of {nameof(Deployment)}'s.");
+        await Task.WhenAll(deployments, environments, projects, releases);
 
-            var environments = pact.Deserialize<HashSet<Env>>(File.ReadAllText($"{path}/Environments.json"))
-                               ?? throw new ArgumentException($"Expected valid a list of {nameof(Env)}'s.");
-
-            var projects = pact.Deserialize<HashSet<Project>>(File.ReadAllText($"{path}/Projects.json"))
-                           ?? throw new ArgumentException($"Expected valid a list of {nameof(Project)}'s.");
-
-            var releases = pact.Deserialize<HashSet<Release>>(File.ReadAllText($"{path}/Releases.json"))
-                           ?? throw new ArgumentException($"Expected valid a list of {nameof(Release)}'s.");
-
-            return new DeploymentData(
-                deployments,
-                // Convert lists to maps take the hit on the iteration once to allow for look ups via key later.
-                environments.ToDictionary(environment => environment.Id.Sanitise()),
-                projects.ToDictionary(project => project.Id.Sanitise()),
-                releases.ToDictionary(release => release.Id.Sanitise())
-            );
-        }
-        catch (Exception)
-        {
-            Log.Error("Failed to attempting to parse json from `{Path}`", path);
-            throw;
-        }
-
+        return new DeploymentData(
+            deployments.Result,
+            // Convert lists to maps take the hit on the iteration once to allow for look ups via key later.
+            environments.Result.ToDictionary(environment => environment.Id.Sanitise()),
+            projects.Result.ToDictionary(project => project.Id.Sanitise()),
+            releases.Result.ToDictionary(release => release.Id.Sanitise())
+        );
     }
 }
