@@ -70,3 +70,4 @@ reportgenerator \
 - Set up dependabot to help keep dependencies upto date.
 - Possibly suggest data/json structure be switched from arrays -> map / dictionary as it would make look ups faster.
 - If timestamps for a deployment of the same group fallback to `Version` number is at least incremental and the higher version will be used.
+- Testing could be improved with more variation.

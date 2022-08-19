@@ -28,12 +28,13 @@ public class IntoDomainTests {
         );
 
         // Act
-        var results = data.IntoDeploymentCollection(maxDeployments: 10);
+        var collection = data.IntoDeploymentCollection(maxDeployments: 10);
+        var deploymentIds = collection.DeploymentIdsToPersist();
 
         // Assert
-        results.Should().HaveCount(1);
+        collection.Should().HaveCount(1);
 
-        var result = results.First();
+        var result = collection.First();
 
         result.Value.Should().HaveCount(2);
         result.Value.Values
@@ -41,6 +42,8 @@ public class IntoDomainTests {
             .BeEquivalentTo(deployments.Select(dep => dep.IntoDomain(envs, releases, projects)))
             .And
             .BeInAscendingOrder(deployment => deployment.DeployedAt);
+
+        deploymentIds.Should().BeEquivalentTo(deployments[0].Id, deployments[1].Id);
     }
 
     [Fact]
@@ -65,22 +68,14 @@ public class IntoDomainTests {
         );
 
         // Act
-        var results = data.IntoDeploymentCollection(maxDeployments: 2);
+        var results = data.IntoDeploymentCollection(maxDeployments: 2)
+            .DeploymentIdsToPersist();
 
         // Assert
-        results.Should().HaveCount(1);
-
-        var result = results.First();
-
-        result.Value.Should().HaveCount(2);
-        result.Value.Values.Should()
-            .BeEquivalentTo(new[]
-            {
-                deployments[2].IntoDomain(envs, releases, projects),
-                deployments[0].IntoDomain(envs, releases, projects)
-            })
+        results.Should()
+            .HaveCount(2)
             .And
-            .BeInAscendingOrder(deployment => deployment.DeployedAt);
+            .BeEquivalentTo(deployments[2].Id, deployments[0].Id);
     }
 
     [Fact]
