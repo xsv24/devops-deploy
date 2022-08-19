@@ -28,4 +28,9 @@
     <ProjectReference Include="..\..\src\DevopsDeploy\DevopsDeploy.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Allows us to run the project from the root level as well as the project level -->
+    <Content Include="./TestData/**" LinkBase="TestData" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
